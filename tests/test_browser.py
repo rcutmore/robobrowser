@@ -343,3 +343,12 @@ class TestAllowRedirects(unittest.TestCase):
         assert_true(mock_request.called)
         kwargs = mock_request.mock_calls[0][2]
         assert_true(kwargs.get('allow_redirects') is False)
+
+
+class TestRetry(unittest.TestCase):
+
+    def test_default_backoff_factor_not_none(self):
+        session = RoboBrowser(tries=3).session
+        for protocol in session.adapters:
+            factor = session.adapters[protocol].max_retries.backoff_factor
+            assert_true(factor is not None)

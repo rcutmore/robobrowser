@@ -67,7 +67,7 @@ class RoboBrowser(object):
     def __init__(self, session=None, parser=None, user_agent=None,
                  history=True, timeout=None, allow_redirects=True, cache=False,
                  cache_patterns=None, max_age=None, max_count=None, tries=None,
-                 multiplier=None):
+                 multiplier=0):
 
         self.session = session or requests.Session()
 
