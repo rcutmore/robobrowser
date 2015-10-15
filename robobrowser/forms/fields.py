@@ -52,9 +52,14 @@ class Input(BaseField):
         super(Input, self).__init__(parsed)
         self.value = self._parsed.get('value')
 
+    def __repr__(self):
+        return '<Input name={0}, value={1}>'.format(self.name, self.value)
+
 
 class Submit(Input):
-    pass
+
+    def __repr__(self):
+        return '<Submit name={0}, value={1}>'.format(self.name, self.value)
 
 
 class FileInput(BaseField):
@@ -71,6 +76,9 @@ class FileInput(BaseField):
     # Serialize value to 'files' key for compatibility with file attachments
     # in requests.
     payload_key = 'files'
+
+    def __repr__(self):
+        return '<FileInput name={0}, value={1}>'.format(self.name, self.value)
 
 
 class MultiOptionField(BaseField):
@@ -195,13 +203,21 @@ class Textarea(Input):
         super(Textarea, self).__init__(parsed)
         self.value = self._parsed.text.rstrip('\r').rstrip('\n')
 
+    def __repr__(self):
+        return '<Textarea name={0}, value={1}>'.format(self.name, self.value)
+
 
 class Checkbox(FlatOptionField, MultiValueField):
-    pass
+
+    def __repr__(self):
+        values = ', '.join(value for value in self.value)
+        return '<Checkbox name={0}, value=[{1}]>'.format(self.name, values)
 
 
 class Radio(FlatOptionField, MultiOptionField):
-    pass
+
+    def __repr__(self):
+        return '<Radio name={0}, value={1}>'.format(self.name, self.value)
 
 
 class Select(NestedOptionField, MultiOptionField):
@@ -213,6 +229,12 @@ class Select(NestedOptionField, MultiOptionField):
         if not self._value and self.options:
             self.value = self.options[0]
 
+    def __repr__(self):
+        return '<Select name={0}, value={1}>'.format(self.name, self.value)
+
 
 class MultiSelect(NestedOptionField, MultiValueField):
-    pass
+
+    def __repr__(self):
+        values = ', '.join(value for value in self.value)
+        return '<MultiSelect name={0}, value=[{1}]>'.format(self.name, values)

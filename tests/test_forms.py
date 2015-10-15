@@ -147,6 +147,19 @@ class TestFormMultiSubmit(unittest.TestCase):
         assert_false('submit2' in serialized.data)
 
 
+class TestSubmit(unittest.TestCase):
+
+    def setUp(self):
+        self.submit = fields.Submit(
+            '<input type="submit" name="submit1" value="value1" />')
+
+    def test_repr(self):
+        assert_equal(
+            repr(self.submit),
+            '<Submit name=submit1, value=value1>'
+        )
+
+
 class TestParser(unittest.TestCase):
 
     def setUp(self):
@@ -282,6 +295,12 @@ class TestInput(unittest.TestCase):
         html = '<input />'
         assert_raises(exceptions.InvalidNameError, lambda: fields.Input(html))
 
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Input name=brian, value=may>'
+        )
+
 
 class TestInputBlank(unittest.TestCase):
 
@@ -297,6 +316,12 @@ class TestInputBlank(unittest.TestCase):
         assert_equal(
             self.input.serialize(),
             {'blank': ''}
+        )
+
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Input name=blank, value=>'
         )
 
 
@@ -324,6 +349,12 @@ class TestTextarea(unittest.TestCase):
             {'roger': 'taylor'}
         )
 
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Textarea name=roger, value=taylor>'
+        )
+
 
 class TestTextareaBlank(unittest.TestCase):
 
@@ -339,6 +370,12 @@ class TestTextareaBlank(unittest.TestCase):
         assert_equal(
             self.input.serialize(),
             {'blank': ''}
+        )
+
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Textarea name=blank, value=>'
         )
 
 
@@ -383,6 +420,20 @@ class TestSelect(unittest.TestCase):
             {'john': "you're"}
         )
 
+    def test_repr(self):
+        # Test default for given html.
+        assert_equal(
+            repr(self.input),
+            "<Select name=john, value=you're>"
+        )
+
+        # Test a different value.
+        self.input.value = 'tie'
+        assert_equal(
+            repr(self.input),
+            '<Select name=john, value=tie>'
+        )
+
 
 class TestSelectBlank(unittest.TestCase):
 
@@ -409,6 +460,12 @@ class TestSelectBlank(unittest.TestCase):
             {'john': 'tie'}
         )
 
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Select name=john, value=tie>'
+        )
+
 
 class TestMultiSelect(unittest.TestCase):
 
@@ -421,6 +478,39 @@ class TestMultiSelect(unittest.TestCase):
             </select>
         '''
         self.input = fields.MultiSelect(BeautifulSoup(self.html).find('select'))
+
+    def test_repr(self):
+        # Test default for given html.
+        assert_equal(
+            repr(self.input),
+            "<MultiSelect name=john, value=[you're]>"
+        )
+
+        # Test after selecting different options.
+        self.input.value = ['tie', "you're", 'the']
+        assert_equal(
+            repr(self.input),
+            "<MultiSelect name=john, value=[tie, you're, the]>"
+        )
+
+
+class TestMultiSelectBlank(unittest.TestCase):
+
+    def setUp(self):
+        self.html = '''
+            <select name="john" multiple>
+                <option value="tie">your mother down</option>
+                <option value="you're">my best friend</option>
+                <option value="the">millionaire waltz</option>
+            </select>
+        '''
+        self.input = fields.MultiSelect(BeautifulSoup(self.html).find('select'))
+
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            "<MultiSelect name=john, value=[]>"
+        )
 
 
 class TestMixedCase(unittest.TestCase):
@@ -491,6 +581,20 @@ class TestRadio(unittest.TestCase):
             {'members': 'mercury'}
         )
 
+    def test_repr(self):
+        # Test default for given html.
+        assert_equal(
+            repr(self.input),
+            '<Radio name=members, value=mercury>'
+        )
+
+        # Test after selecting a different option.
+        self.input.value = 'may'
+        assert_equal(
+            repr(self.input),
+            '<Radio name=members, value=may>'
+        )
+
 
 class TestRadioBlank(unittest.TestCase):
 
@@ -510,6 +614,12 @@ class TestRadioBlank(unittest.TestCase):
         assert_equal(
             self.input.serialize(),
             {'member': ''}
+        )
+
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Radio name=member, value=>'
         )
 
 
@@ -560,6 +670,20 @@ class TestCheckbox(unittest.TestCase):
             {'member': ['mercury', 'deacon']}
         )
 
+    def test_repr(self):
+        # Test default for given html.
+        assert_equal(
+            repr(self.input),
+            "<Checkbox name=member, value=[mercury, deacon]>"
+        )
+
+        # Test after selecting different inputs.
+        self.input.value = ['mercury']
+        assert_equal(
+            repr(self.input),
+            "<Checkbox name=member, value=[mercury]>"
+        )
+
 
 class TestCheckboxBlank(unittest.TestCase):
 
@@ -581,6 +705,12 @@ class TestCheckboxBlank(unittest.TestCase):
         assert_equal(
             self.input.serialize(),
             {'member': []}
+        )
+
+    def test_repr(self):
+        assert_equal(
+            repr(self.input),
+            '<Checkbox name=member, value=[]>'
         )
 
 
@@ -613,6 +743,21 @@ class TestFileInput(unittest.TestCase):
         assert_equal(
             self.input.serialize(),
             {'song': file}
+        )
+
+    def test_repr(self):
+        # Test with no file.
+        assert_equal(
+            repr(self.input),
+            '<FileInput name=song, value=>'
+        )
+
+        # Test with given temporary file.
+        temp_file = tempfile.TemporaryFile('r')
+        self.input.value = temp_file
+        assert_equal(
+            repr(self.input),
+            "<FileInput name=song, value={0}>".format(temp_file)
         )
 
 
